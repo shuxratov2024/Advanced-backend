@@ -1,6 +1,6 @@
 
-const fileService = require('../server/file.service');
-const postService = require('../server/post.service')
+const fileService = require('../service/file.service');
+const postService = require('../service/post.service')
 
 const fileUpload = require('express-fileupload')
 

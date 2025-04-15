@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 const postRouter = require('./router/post.router')
 const fileUpload = require('express-fileupload')
 const requestTime = require('./middlewares/request-time')
+const router = require('./router/post.router')
 const app = express()
 
 app.use(fileUpload({}))
@@ -15,9 +16,9 @@ app.use(express.static('static')) // public papkasini ochish
 app.use(express.json())
 
 app.use("/api/post",postRouter)
+app.use("/api/auth", require("./router/auth.route"))
 
-
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8021;
 const DB_URL = process.env.DB_URL || "mongodb://localhost:27017/amir"; // Standart URL
 
 const bootstrap = async () => {
