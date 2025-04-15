@@ -4,7 +4,7 @@ const path = require('path')
 const { file } = require('express/lib/response')
 
 class FileService{
-    save(file){
+   async save(file){
         try {
             const fileName = uuidv4() + '.jpg'
             const currentDir = __dirname
@@ -22,5 +22,4 @@ class FileService{
         }
     }
 }
-
-exports = new FileService()
+module.exports = new FileService() 

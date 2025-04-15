@@ -1,11 +1,13 @@
 
-;
+const fileService = require('../server/file.service');
 const postService = require('../server/post.service')
 
+const fileUpload = require('express-fileupload')
 
 class PostController{
     async getAll(req,res) {
         try {
+            console.log(req.requestTime);
             const allPosts = await postService.getAll(); // post parametri olib tashlandi
             res.status(200).json(allPosts);
         } catch (error) {
@@ -13,12 +15,14 @@ class PostController{
         }
     }
     async create(req,res) {
-        try{
-
-    const post = await postService.create(req.body,req.files.picture)
-    res.status(200).json(post)}
-   catch (error){
-    res.status(500).json(error)}
+        try {
+            const picture = await uploadFile(req.file); // <-- await bilan kutib oling
+            const newPost = new Post({ picture });
+            await newPost.save();
+            res.status(201).json(newPost);
+          } catch (error) {
+            res.status(400).json({ error: error.message });
+          }
 }
     async delete(req,res) {
         try{

@@ -1,10 +1,11 @@
-const postModel = require("../models/post.model.js")
+const postModel = require("../models/post.model.js");
+const fileService = require("./file.service.js");
 
 class PostService{
     async create(post,picture) {
         const fileName = fileService.save(picture)
-        const newPost = await postModel.create({...post,picture})
-        return await postModel.create(post)
+        const newPost = await postModel.create({...post,picture : fileName})
+        return newPost
     }
 
     async getAll() {
