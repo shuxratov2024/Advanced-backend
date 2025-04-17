@@ -8,13 +8,16 @@ const fileUpload = require('express-fileupload')
 const requestTime = require('./middlewares/request-time')
 const router = require('./router/post.router')
 const app = express()
+const cookieParser = require('cookie-parser')
+
+
 
 app.use(fileUpload({}))
 
 app.use(requestTime)
 app.use(express.static('static')) // public papkasini ochish
 app.use(express.json())
-
+app.use(cookieParser({}))
 app.use("/api/post",postRouter)
 app.use("/api/auth", require("./router/auth.route"))
 
