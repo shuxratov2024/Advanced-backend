@@ -5,23 +5,25 @@ const express = require('express')
 const mongoose = require('mongoose')
 const postRouter = require('./router/post.router')
 const fileUpload = require('express-fileupload')
-const requestTime = require('./middlewares/request-time')
-const router = require('./router/post.router')
+ 
+// const router = require('./router/post.router')
 const app = express()
 const cookieParser = require('cookie-parser')
+const errorMiddleware = require('./middlewares/error.middleware')
 
 
 
 app.use(fileUpload({}))
 
-app.use(requestTime)
+
 app.use(express.static('static')) // public papkasini ochish
 app.use(express.json())
 app.use(cookieParser({}))
 app.use("/api/post",postRouter)
 app.use("/api/auth", require("./router/auth.route"))
 
-const PORT = process.env.PORT || 8021;
+
+const PORT = process.env.PORT || 8000;
 const DB_URL = process.env.DB_URL || "mongodb://localhost:27017/amir"; // Standart URL
 
 const bootstrap = async () => {
@@ -41,3 +43,5 @@ const bootstrap = async () => {
 };
 
 bootstrap();
+
+    app.use(errorMiddleware)
