@@ -16,7 +16,7 @@ class PostController{
     }
     async create(req,res,next) {
         try {
-            const picture = await uploadFile(req.file); // <-- await bilan kutib oling
+            const picture = await uploadFile(req.file,req.files.picture,req.user.id); // <-- await bilan kutib oling
             const newPost = new Post({ picture });
             await newPost.save();
             res.status(201).json(newPost);

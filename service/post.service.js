@@ -2,9 +2,9 @@ const postModel = require("../models/post.model.js");
 const fileService = require("./file.service.js");
 
 class PostService{
-    async create(post,picture) {
+    async create(post,picture,author) {
         const fileName = fileService.save(picture)
-        const newPost = await postModel.create({...post,picture : fileName})
+        const newPost = await postModel.create({...post,picture : fileName,author})
         return newPost
     }
 
@@ -19,7 +19,7 @@ class PostService{
         if(!id) {
             throw new Error ("ID not found");
         }
-        const updateData = await postModel.findByIdAndUpdate(id, post,  {new:true})
+        const updateData = await postModel.findByIdAndUpdate(id, post,{new:true})
         return updateData
     }
     async getOne(id) {

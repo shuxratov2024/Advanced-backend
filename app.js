@@ -19,7 +19,7 @@ app.use(fileUpload({}))
 app.use(express.static('static')) // public papkasini ochish
 app.use(express.json())
 app.use(cookieParser({}))
-app.use("/api/post",postRouter)
+app.use("/api/post", require("./router/post.router"))
 app.use("/api/auth", require("./router/auth.route"))
 
 
