@@ -2,11 +2,17 @@ const postModel = require("../models/post.model.js");
 const fileService = require("./file.service.js");
 
 class PostService{
-    async create(post,picture,author) {
-        const fileName = fileService.save(picture)
-        const newPost = await postModel.create({...post,picture : fileName,author})
-        return newPost
-    }
+    async create (post, picture) {
+  let fileName = null;
+  
+  if (picture) {
+    fileName = await fileService.save(picture);
+  }
+
+  const newPost = await postModel.create({ ...post, picture: fileName });
+  return newPost;
+}
+
 
     async getAll() {
         return await postModel.find();

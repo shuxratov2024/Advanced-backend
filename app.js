@@ -1,7 +1,7 @@
 //HTTP MODULES - GET,POST,DELETE,PUT
 require('dotenv').config()
 const express = require('express')
-
+const cors = require('cors')
 const mongoose = require('mongoose')
 const postRouter = require('./router/post.router')
 const fileUpload = require('express-fileupload')
@@ -12,6 +12,10 @@ const cookieParser = require('cookie-parser')
 const errorMiddleware = require('./middlewares/error.middleware')
 
 
+app.use(cors({
+  credentials: true,
+  origin : process.env.CLIENT_URL
+}))
 
 app.use(fileUpload({}))
 

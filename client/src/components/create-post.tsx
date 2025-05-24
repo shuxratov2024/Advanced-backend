@@ -1,4 +1,4 @@
-import React, { type ChangeEvent } from 'react'
+import React, { useState, type ChangeEvent } from 'react'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet'
 import { UseCreatePost } from '@/hooks/use-create-post'
 import { postSchema } from '@/lib/validation'
@@ -11,8 +11,13 @@ import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import $axios from '@/http'
+import { toast } from 'sonner'
+
+
 
 function CreatePost() {
+    const  [picture,setPicture] = useState<File | null>(null)
     const {isOpen,onClose} = UseCreatePost()
 
   const form = useForm<z.infer<typeof postSchema>>({
@@ -21,76 +26,82 @@ function CreatePost() {
       title:"", body:"",
     },
   })
-  function onFileChange( event :ChangeEvent<HTMLInputElement>){
+  function onFileChange( event : ChangeEvent<HTMLInputElement>){
    const file = event.target.files  &&  event.target.files[0]
    console.log(event.target.files)
-   console.log(file); 
+   setPicture(file as File)
   }
 
-    function onSubmit(values: z.infer<typeof postSchema>) {
-    console.log(values)
-  }
+    function onSubmit (values: z.infer<typeof postSchema>) {
+    if(!picture) return null
 
-
-
-    return(
-      <>
+    const formData = new FormData();
+    formData.append("title", values.title)
+    formData.append("body", values.body)
+    formData.append("picture", picture)
       
-    <Sheet open={isOpen} onOpenChange={onClose}>
+    const promise = $axios.post("/post/create",formData).then(res => console.log(res))
+
+    toast.promise(promise, {
+      loading: "Creating post...",
+      success: "Post created successfully!",
+      error: "Failed to create post.",
+    })
+  }
+
+
+
+    return( 
+   <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Create a post</SheetTitle>
-          <SheetDescription>
-            Write what is in your mind.
-          </SheetDescription>
+          <SheetDescription>Write what is in your mind.</SheetDescription>
         </SheetHeader>
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-6">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Username</FormLabel>
-              <FormControl>
-                <Input placeholder="enter your email" className='bg-secondary' {...field} />
-              </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="body"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Body</FormLabel>
-              <FormControl>
-                <Textarea placeholder="enter your email" className='bg-secondary' {...field} />
-              </FormControl>
-              <FormDescription>
-                in this article you can write your post
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-          />
-          <div>
-            <Label htmlFor='picture'>Picture</Label>
-            <Input id="picture" type="file"  className='bg-secondary' onCanPlay={onFileChange}/>
-          </div>
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-6">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="enter your username" className='bg-secondary' {...field} />
+                  </FormControl>
+                  <FormDescription>This is your public display name.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="body"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Body</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="enter your text" className='bg-secondary' {...field} />
+                  </FormControl>
+                  <FormDescription>In this article you can write your post.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div>
+              <Label htmlFor='picture'>Picture</Label>
+              <Input 
+                id="picture" 
+                type="file" 
+                className='bg-secondary' 
+                onChange={onFileChange}  // `onChange` ishlatildi
+              />
+            </div>
+            <Button type="submit">Submit</Button>
+          </form>
+        </Form>
       </SheetContent>
     </Sheet>
-
-
-     </>
-
     )
 
         }

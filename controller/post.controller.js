@@ -1,4 +1,5 @@
 
+const { post } = require('../router/post.router');
 const fileService = require('../service/file.service');
 const postService = require('../service/post.service')
 
@@ -14,15 +15,17 @@ class PostController{
             next(error)
         }
     }
-    async create(req,res,next) {
-        try {
-            const picture = await uploadFile(req.file,req.files.picture,req.user.id); // <-- await bilan kutib oling
-            const newPost = new Post({ picture });
-            await newPost.save();
-            res.status(201).json(newPost);
-          } catch (error) {
-            next(error)
-          }
+async create (req, res, next) {
+  try {
+    if (!req.files?.picture) {
+      return res.status(400).json({ error: "File 'picture' is required" });
+    }
+
+    const post = await postService.create(req.body, req.files.picture);
+    res.status(200).json(post);
+  } catch (error) {
+    next(error);
+  }
 }
     async delete(req,res,next) {
         try{
