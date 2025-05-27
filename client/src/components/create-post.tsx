@@ -13,13 +13,16 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import $axios from '@/http'
 import { toast } from 'sonner'
+import { postStore } from '@/store/post.store'
+
 
 
 
 function CreatePost() {
-    const  [picture,setPicture] = useState<File | null>(null)
-    const {isOpen,onClose} = UseCreatePost()
-
+  const  [picture,setPicture] = useState<File | null>(null)
+  const {isOpen,onClose} = UseCreatePost()
+  const {posts,setPosts} = postStore()
+  
   const form = useForm<z.infer<typeof postSchema>>({
     resolver: zodResolver(postSchema),
     defaultValues: {
@@ -40,7 +43,11 @@ function CreatePost() {
     formData.append("body", values.body)
     formData.append("picture", picture)
       
-    const promise = $axios.post("/post/create",formData).then(res => console.log(res))
+    const promise = $axios.post("/post/create",formData).then(res => {const newData =[...posts,res.data]
+      setPosts(newData)
+      form.reset() 
+      onClose()
+    })
 
     toast.promise(promise, {
       loading: "Creating post...",
@@ -65,11 +72,11 @@ function CreatePost() {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>Title</FormLabel>
                   <FormControl>
                     <Input placeholder="enter your username" className='bg-secondary' {...field} />
                   </FormControl>
-                  <FormDescription>This is your public display name.</FormDescription>
+                  <FormDescription>Write title of your post </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

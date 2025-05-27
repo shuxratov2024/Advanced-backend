@@ -14,15 +14,15 @@ function Navbar() {
       <div className='w-full h-24 bg-gray-900 fixed inset-0'>
         <div className="w-full h-full flex justify-between items-content container">
         <Link className='flex items-center justify-center w-40.5 h-18 .5' to={'/'}>
-            <img src={logo} />
+            <img src={logo} className='w-full' />
             
             </Link>
         <div className="flex gap-2">
-            <Button className='rounded-full bg-gray-600  font-bold ' size={"lg" } variant={"outline"} onClick={onOpen}>
+            <Button className='rounded-full bg-gray-600  font-bold mt-6' size={"lg" } variant={"outline"} onClick={onOpen}>
                 Create a Post
             </Button>
             <Link to={"/auth"}>
-            <Button className='rounded-full bg-gray-900 font-bold' size={"lg" } variant={"outline"}>
+            <Button className='rounded-full bg-gray-900 font-bold mt-6' size={"lg" } variant={"outline"}>
                 Login
             </Button>
             
