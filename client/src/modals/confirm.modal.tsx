@@ -4,7 +4,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { DialogFooter, DialogHeader } from '@/components/ui/dialog'
 import { useConfirm,  } from '@/hooks/use-confirm'
-import $axios from '@/http'
+import $axios, { API_URL } from '@/http'
 import { postStore } from '@/store/post.store'
 import { Dialog, DialogContent, DialogDescription, DialogTitle,  } from '@radix-ui/react-dialog'
 import { useMutation } from '@tanstack/react-query'
@@ -16,31 +16,26 @@ import { toast } from 'sonner'
 
 
 function ConfirmModal() {
+  
     const {isOpen, onClose,post} = useConfirm()
 
     const {setPosts, posts,} = postStore()
-const { mutate, error, isPending } = useMutation({
+const { mutate, error,} = useMutation({
   mutationKey: ["delete-post"],
   mutationFn: async () => {
-    try {
-      if (!post?._id) throw new Error("Post ID not found");
-      
-      const response = await $axios.delete(`/post/delete/${post._id}`);
-      return response.data;
-    } catch (err) {
-      // To'g'ri error message olish
-      const errorMessage = err.response?.data?.message || err.message || "Failed to delete post";
-      throw new Error(errorMessage);
-    }
+     const {data} = await $axios.delete(`/post/delete/${post._id}`);
+     return data
   },
   onSuccess: (data) => {
-    setPosts(posts.filter(p => p._id !== data._id));
+    const newData = posts.filter(c => c._id !== data._id)
+    setPosts(newData);
     onClose();
   },
   onError: (error) => {
     console.error("Delete error:", error.message);
-    // Foydalanuvchiga xabarni ko'rsatish
-    toast.error(error.message); // Agar toast ishlatayotgan bo'lsangiz
+    toast.error(error.message); 
+    console.log("Deleting post with ID:", post._id);
+  console.log("Full URL:", `${API_URL}/posts/${post._id}`);
   }
 });
   return (
@@ -56,7 +51,6 @@ const { mutate, error, isPending } = useMutation({
     </Alert>
     )}
     
-
     <DialogHeader>
       <DialogTitle>Are you absolutely sure?</DialogTitle>
       <DialogDescription>
