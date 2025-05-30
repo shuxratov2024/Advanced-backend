@@ -36,15 +36,17 @@ async create (req, res, next) {
             next(error)
         }
     }
-    async edit (req,res,next) {
-        try {
-            const {body, params} = req
-            const post = await postService.edit(params.id, body)
-            res.status(200).json(post)
-        } catch (error) {
-            next(error)
-        }
-    }
+    async edit(req, res, next) {
+  try {
+    const { body, params } = req;
+    console.log('Controller: Kelayotgan ma\'lumotlar:', body, 'ID:', params.id); // Ma'lumotlarni tekshirish
+    const post = await postService.edit(body, params.id); // Tartibni tuzatish: body, id
+    res.status(200).json(post);
+  } catch (error) {
+    console.error('Controller xatosi:', error);
+    next(error);
+  }
+}
 
     async getOne (req,res,next) {
         try {

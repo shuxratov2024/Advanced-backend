@@ -1,5 +1,5 @@
 import React, { useState, type ChangeEvent } from 'react'
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, } from './ui/sheet'
 import { UseCreatePost } from '@/hooks/use-create-post'
 import { postSchema } from '@/lib/validation'
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -14,52 +14,71 @@ import { Button } from '@/components/ui/button';
 import $axios from '@/http'
 import { toast } from 'sonner'
 import { postStore } from '@/store/post.store'
+import { AuthStore } from '@/store/auth.store'
+import $api from '@/http/api'
 
 
 
 
 function CreatePost() {
-  const  [picture,setPicture] = useState<File | null>(null)
-  const {isOpen,onClose} = UseCreatePost()
-  const {posts,setPosts} = postStore()
-  
+  const [picture, setPicture] = useState<File | null>(null)
+  const { isOpen, onClose } = UseCreatePost()
+  const { posts, setPosts, } = postStore()
+  const { setLoading } = AuthStore()
+
   const form = useForm<z.infer<typeof postSchema>>({
     resolver: zodResolver(postSchema),
     defaultValues: {
-      title:"", body:"",
+      title: "", body: "",
     },
   })
-  function onFileChange( event : ChangeEvent<HTMLInputElement>){
-   const file = event.target.files  &&  event.target.files[0]
-   console.log(event.target.files)
-   setPicture(file as File)
+  function onFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files && event.target.files[0]
+    console.log(event.target.files)
+    setPicture(file as File)
   }
 
-    function onSubmit (values: z.infer<typeof postSchema>) {
-    if(!picture) return null
+  async function onSubmit(values: z.infer<typeof postSchema>) {
+    if (!picture) return null
 
     const formData = new FormData();
     formData.append("title", values.title)
     formData.append("body", values.body)
     formData.append("picture", picture)
-      
-    const promise = $axios.post("/post/create",formData).then(res => {const newData =[...posts,res.data]
+
+    try {
+      const res = await $api.post("/post/create", formData)
+      const newData = [...posts, res.data]
       setPosts(newData)
-      form.reset() 
+      form.reset()
       onClose()
-    })
+    } catch (error) {
+      //@ts-ignore
+      toast(error.response.data.message)
+    }finally {
+      setLoading(false)
+    }}
 
-    toast.promise(promise, {
-      loading: "Creating post...",
-      success: "Post created successfully!",
-      error: "Failed to create post.",
-    })
-  }
+    // const promise = $axios.post("/post/create", formData).then(res => {
+    //   const newData = [...posts, res.data]
+    //   setPosts(newData)
+    //   form.reset()
+    // onClose()
+    // })
+    //   .catch(err => (errorMSG = err.response.data.message))
+
+
+  //   toast.promise(promise, {
+  //     loading: "Creating post...",
+  //     success: "Post created successfully!",
+  //     error: "Failed to create post.",
+  //   })
+  // }
 
 
 
-    return( 
-   <Sheet open={isOpen} onOpenChange={onClose}>
+  return (
+    <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Create a post</SheetTitle>
@@ -97,10 +116,10 @@ function CreatePost() {
             />
             <div>
               <Label htmlFor='picture'>Picture</Label>
-              <Input 
-                id="picture" 
-                type="file" 
-                className='bg-secondary' 
+              <Input
+                id="picture"
+                type="file"
+                className='bg-secondary'
                 onChange={onFileChange}  // `onChange` ishlatildi
               />
             </div>
@@ -109,8 +128,8 @@ function CreatePost() {
         </Form>
       </SheetContent>
     </Sheet>
-    )
+  )
 
-        }
- 
+}
+
 export default CreatePost

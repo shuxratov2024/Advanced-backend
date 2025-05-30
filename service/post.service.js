@@ -21,13 +21,20 @@ class PostService{
         const post = await postModel.findByIdAndDelete(id)
         return post
     }
-    async edit(post,id ){
-        if(!id) {
-            throw new Error ("ID not found");
-        }
-        const updateData = await postModel.findByIdAndUpdate(id, post,{new:true})
-        return updateData
-    }
+    async edit(post, id) {
+  if (!id) {
+    throw new Error("ID not found");
+  }
+  const updateData = await postModel.findByIdAndUpdate(
+    id,
+    { $set: post }, // Faqat yuborilgan maydonlarni yangilash
+    { new: true, runValidators: true } // Yangilangan hujjatni qaytarish va validatsiyani ishga tushirish
+  );
+  if (!updateData) {
+    throw new Error("Post topilmadi");
+  }
+  return updateData;
+}
     async getOne(id) {
         if(!id) {
             throw new Error ("ID not found");

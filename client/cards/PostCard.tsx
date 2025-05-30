@@ -14,6 +14,8 @@ import { Input } from '@/components/ui/input';
 import type { z } from 'zod';
 import { useMutation } from '@tanstack/react-query';
 import { postStore } from '@/store/post.store';
+import { toast } from 'sonner';
+import $api from '@/http/api';
 
 function PostCard({ post }: { post: IPost }) {
   const [open, setOpen] = useState(false);
@@ -31,8 +33,8 @@ function PostCard({ post }: { post: IPost }) {
   const { mutate, isPending } = useMutation({
     mutationKey: ['edit-post'],
     mutationFn: async (values: z.infer<typeof postSchema>) => {
-      console.log('Yuborilayotgan ma\'lumotlar:', values); // Yuborilayotgan ma'lumotlarni tekshirish
-      const { data } = await $axios.put(`/post/edit/${post._id}`, values);
+      console.log('Yuborilayotgan malumotlar:', values); // Yuborilayotgan ma'lumotlarni tekshirish
+      const { data } = await $api.put(`/post/edit/${post._id}`, values);
       return data;
     },
     onSuccess: (data) => {
@@ -42,7 +44,8 @@ function PostCard({ post }: { post: IPost }) {
       setOpen(false);
     },
     onError: (error) => {
-      console.error('Edit xatosi:', error); // Xatolarni konsolga chiqarish
+      //@ts-ignore
+     toast.err.response.data.message
     },
   });
 
@@ -61,10 +64,10 @@ function PostCard({ post }: { post: IPost }) {
   }
 
   return (
-    <Card className="rounded">
+    <Card className="rounded mt-10">
       <img src={`${API_URL}/${post.picture}`} alt={post.title} className="rounded-t-md" />
       <CardContent className="mt-2">
-        <CardTitle className="line-clamp-1">{post.title}</CardTitle>
+        <CardTitle className="line-clamp-3">{post.title}</CardTitle>
         <p className="line-clamp-2 mt-1 text-muted-foreground">{post.body}</p>
       </CardContent>
       <CardFooter className="gap-2">

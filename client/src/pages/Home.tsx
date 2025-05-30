@@ -27,7 +27,7 @@ function Home() {
   })
   
   return (<>
-    <div className='container mx-w-4xl mx-auto mt-20'>
+    <div className='container mx-w-4xl mx-auto mt-20 h-20'>
       {error && (
          <Alert variant="destructive">
       <AlertCircle className="h-4 w-4" />
